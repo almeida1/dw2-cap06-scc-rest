@@ -20,6 +20,9 @@ import com.fatec.sccrest.services.MantemClienteI;
 
 @RestController
 @RequestMapping("/api/v1/clientes")
+/*
+ * Trata as requisicoes HTTP enviadas pelo usuario do servico
+ */
 public class APIClienteController {
 	@Autowired
 	MantemClienteI mantemCliente;
