@@ -26,8 +26,8 @@ class REQ01CadastrarClienteTests {
 	@Autowired
 	private ClienteRepository repository;
 	
-	//String urlBase = "/api/v1/clientes";
-	String urlBase = "https://sccrest.herokuapp.com/api/v1/clientes";
+	String urlBase = "/api/v1/clientes";
+	//String urlBase = "https://sccrest.herokuapp.com/api/v1/clientes";
 	/**********************************************************************************
 	 * Teste de integracao controler -> servico -> repository -> DB
 	 *********************************************************************************/

@@ -1,4 +1,5 @@
 package com.fatec.sccrest.services;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -56,19 +57,16 @@ public class MantemClienteI implements MantemCliente {
 	@Override
 	public Optional<Cliente> altera(Cliente cliente) {
 		logger.info(">>>>>> 1.servico altera cliente chamado");
-		Optional<Cliente> umCliente = consultaPorId(cliente.getId());
 		Endereco endereco = obtemEndereco(cliente.getCep());
-		if (umCliente.isPresent() & endereco != null) {
-			Cliente clienteModificado = new Cliente(cliente.getNome(), cliente.getDataNascimento(), cliente.getSexo(),
-					cliente.getCpf(), cliente.getCep(), cliente.getComplemento());
-			clienteModificado.setId(cliente.getId());
-			clienteModificado.obtemDataAtual(new DateTime());
-			clienteModificado.setEndereco(endereco.getLogradouro());
-			logger.info(">>>>>> 2. servico altera cliente cep valido para o id => " + clienteModificado.getId());
-			return Optional.ofNullable(repository.save(clienteModificado));
-		} else {
-			return Optional.empty();
-		}
+
+		Cliente clienteModificado = new Cliente(cliente.getNome(), cliente.getDataNascimento(), cliente.getSexo(),
+				cliente.getCpf(), cliente.getCep(), cliente.getComplemento());
+		clienteModificado.setId(cliente.getId());
+		clienteModificado.obtemDataAtual(new DateTime());
+		clienteModificado.setEndereco(endereco.getLogradouro());
+		logger.info(">>>>>> 2. servico altera cliente cep valido para o id => " + clienteModificado.getId());
+		return Optional.ofNullable(repository.save(clienteModificado));
+
 	}
 
 	public Endereco obtemEndereco(String cep) {
