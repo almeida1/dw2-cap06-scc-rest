@@ -118,7 +118,13 @@ public class Cliente {
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("dd/MM/YYYY");
 		return dataAtual.toString(fmt);
 	}
+	@Override
+	public String toString() {
+		return "Cliente [id=" + id + ", nome=" + nome + ", dataNascimento=" + dataNascimento + ", dataCadastro="
+				+ dataCadastro + ", sexo=" + sexo + ", cpf=" + cpf + ", cep=" + cep + ", endereco=" + endereco
+				+ ", complemento=" + complemento + "]";
+	}
 	
-	//equals e tostring omitidos
+	
 	
 }

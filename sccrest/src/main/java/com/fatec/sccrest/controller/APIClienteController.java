@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,7 +55,7 @@ public class APIClienteController {
 		}
 		return ResponseEntity.status(HttpStatus.CREATED).body(mantemCliente.save(clienteDTO.retornaUmCliente()));
 	}
-
+	@CrossOrigin // desabilita o cors do spring security
 	@GetMapping
 	public ResponseEntity<List<Cliente>> consultaTodos() {
 		return ResponseEntity.status(HttpStatus.OK).body(mantemCliente.consultaTodos());
