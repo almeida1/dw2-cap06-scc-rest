@@ -55,16 +55,16 @@ public class MantemClienteI implements MantemCliente {
 	}
 
 	@Override
-	public Optional<Cliente> altera(Cliente cliente) {
-		logger.info(">>>>>> 1.servico altera cliente chamado");
+	public Optional<Cliente> atualiza (Long id, Cliente cliente) {
+		logger.info(">>>>>> 1.servico atualiza informações de cliente chamado");
 		Endereco endereco = obtemEndereco(cliente.getCep());
 
 		Cliente clienteModificado = new Cliente(cliente.getNome(), cliente.getDataNascimento(), cliente.getSexo(),
 				cliente.getCpf(), cliente.getCep(), cliente.getComplemento());
-		clienteModificado.setId(cliente.getId());
+		clienteModificado.setId(id);
 		clienteModificado.obtemDataAtual(new DateTime());
 		clienteModificado.setEndereco(endereco.getLogradouro());
-		logger.info(">>>>>> 2. servico altera cliente cep valido para o id => " + clienteModificado.getId());
+		logger.info(">>>>>> 2. servico atualiza informacoes de cliente cep valido para o id => " + clienteModificado.getId());
 		return Optional.ofNullable(repository.save(clienteModificado));
 
 	}

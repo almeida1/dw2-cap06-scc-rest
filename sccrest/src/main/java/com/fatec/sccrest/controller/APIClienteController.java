@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +36,14 @@ public class APIClienteController {
 	MantemClienteI mantemCliente;
 	Cliente cliente;
 	Logger logger = LogManager.getLogger(this.getClass());
-
+	@CrossOrigin // desabilita o cors do spring security
 	@PostMapping
-	public ResponseEntity<Object> saveCliente(@RequestBody @Valid ClienteDTO clienteDTO) {
+	public ResponseEntity<Object> saveCliente(@RequestBody @Valid ClienteDTO clienteDTO, BindingResult result) {
 		cliente = new Cliente();
+		if (result.hasErrors()) {
+			logger.info(">>>>>> apicontroller cadastra informações de cliente chamado dados invalidos");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados inválidos.");
+		}
 		if (mantemCliente.consultaPorCpf(clienteDTO.getCpf()).isPresent()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("CPF já cadastrado");
 		}
@@ -60,14 +65,8 @@ public class APIClienteController {
 	public ResponseEntity<List<Cliente>> consultaTodos() {
 		return ResponseEntity.status(HttpStatus.OK).body(mantemCliente.consultaTodos());
 	}
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> consultaPorId(@PathVariable (value="id") Long id){
-    	Optional<Cliente> cliente = mantemCliente.consultaPorId(id);
-    	if (cliente.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
-    	}
-    	return ResponseEntity.status(HttpStatus.OK).body(cliente.get());
-    }
+   
+	@CrossOrigin // desabilita o cors do spring security
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deletePorId(@PathVariable (value="id") Long id){
     	Optional<Cliente> cliente = mantemCliente.consultaPorId(id);
@@ -77,9 +76,14 @@ public class APIClienteController {
     	mantemCliente.delete(cliente.get().getId());
     	return ResponseEntity.status(HttpStatus.OK).body("Cliente excluido");
     }
-
+    @CrossOrigin // desabilita o cors do spring security
     @PutMapping("/{id}")
-    public ResponseEntity<Object> atualiza(@PathVariable (value="id") Long id, @RequestBody @Valid ClienteDTO clienteDTO){
+    public ResponseEntity<Object> atualiza(@PathVariable long id, @RequestBody @Valid ClienteDTO clienteDTO, BindingResult result){
+    	logger.info(">>>>>> api atualiza informações de cliente chamado");
+    	if (result.hasErrors()) {
+			logger.info(">>>>>> apicontroller atualiza informações de cliente chamado dados invalidos");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados inválidos.");
+		}
     	Optional<Cliente> c = mantemCliente.consultaPorId(id);
     	if (c.isEmpty()) {
     		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
@@ -88,7 +92,17 @@ public class APIClienteController {
     	if (e.isEmpty()) {
     		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CEP não localizado.");
     	}
-    	mantemCliente.altera(clienteDTO.retornaUmCliente());
-    	return ResponseEntity.status(HttpStatus.OK).body("Informações de cliente atualizada");
+    	Optional<Cliente> cliente = mantemCliente.atualiza(id, clienteDTO.retornaUmCliente());
+    	return ResponseEntity.status(HttpStatus.OK).body(cliente.get());
+    }
+    @CrossOrigin // desabilita o cors do spring security
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> consultaPorId(@PathVariable Long id){
+		logger.info(">>>>>> apicontroller consulta por id chamado");
+    	Optional<Cliente> cliente = mantemCliente.consultaPorId(id);
+    	if (cliente.isEmpty()) {
+    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
+    	}
+    	return ResponseEntity.status(HttpStatus.OK).body(cliente.get());
     }
 }
