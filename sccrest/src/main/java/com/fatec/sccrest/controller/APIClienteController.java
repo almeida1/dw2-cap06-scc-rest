@@ -41,7 +41,7 @@ public class APIClienteController {
 	public ResponseEntity<Object> saveCliente(@RequestBody @Valid ClienteDTO clienteDTO, BindingResult result) {
 		cliente = new Cliente();
 		if (result.hasErrors()) {
-			logger.info(">>>>>> apicontroller cadastra informações de cliente chamado dados invalidos");
+			logger.info(">>>>>> apicontroller saveCliente chamado dados invalidos" + result.getFieldError());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados inválidos.");
 		}
 		if (mantemCliente.consultaPorCpf(clienteDTO.getCpf()).isPresent()) {
