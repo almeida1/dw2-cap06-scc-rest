@@ -36,15 +36,17 @@ public class APIClienteController {
 	MantemClienteI mantemCliente;
 	Cliente cliente;
 	Logger logger = LogManager.getLogger(this.getClass());
+
 	@CrossOrigin // desabilita o cors do spring security
 	@PostMapping
 	public ResponseEntity<Object> saveCliente(@RequestBody @Valid ClienteDTO clienteDTO, BindingResult result) {
 		cliente = new Cliente();
 		if (result.hasErrors()) {
-			logger.info(">>>>>> apicontroller saveCliente chamado dados invalidos" + result.getFieldError());
+			logger.info(">>>>>> apicontroller validacao da entrada dados invalidos" + result.getFieldError());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados inválidos.");
 		}
 		if (mantemCliente.consultaPorCpf(clienteDTO.getCpf()).isPresent()) {
+			logger.info(">>>>>> apicontroller consultaporcpf cpf ja cadastrado");
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("CPF já cadastrado");
 		}
 
@@ -54,55 +56,63 @@ public class APIClienteController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
 		Optional<Endereco> endereco = Optional.ofNullable(mantemCliente.obtemEndereco(clienteDTO.getCep()));
-		logger.info(">>>>>> controller post " + clienteDTO.getCep());
+		logger.info(">>>>>> apicontroller obtem endereco => " + clienteDTO.getCep());
 		if (endereco.isEmpty()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CEP invalido");
 		}
-		return ResponseEntity.status(HttpStatus.CREATED).body(mantemCliente.save(clienteDTO.retornaUmCliente()));
+		try {
+			return ResponseEntity.status(HttpStatus.CREATED).body(mantemCliente.save(clienteDTO.retornaUmCliente()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro não esperado ");
+		}
 	}
+
 	@CrossOrigin // desabilita o cors do spring security
 	@GetMapping
 	public ResponseEntity<List<Cliente>> consultaTodos() {
 		return ResponseEntity.status(HttpStatus.OK).body(mantemCliente.consultaTodos());
 	}
-   
+
 	@CrossOrigin // desabilita o cors do spring security
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deletePorId(@PathVariable (value="id") Long id){
-    	Optional<Cliente> cliente = mantemCliente.consultaPorId(id);
-    	if (cliente.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
-    	}
-    	mantemCliente.delete(cliente.get().getId());
-    	return ResponseEntity.status(HttpStatus.OK).body("Cliente excluido");
-    }
-    @CrossOrigin // desabilita o cors do spring security
-    @PutMapping("/{id}")
-    public ResponseEntity<Object> atualiza(@PathVariable long id, @RequestBody @Valid ClienteDTO clienteDTO, BindingResult result){
-    	logger.info(">>>>>> api atualiza informações de cliente chamado");
-    	if (result.hasErrors()) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Object> deletePorId(@PathVariable(value = "id") Long id) {
+		Optional<Cliente> cliente = mantemCliente.consultaPorId(id);
+		if (cliente.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
+		}
+		mantemCliente.delete(cliente.get().getId());
+		return ResponseEntity.status(HttpStatus.OK).body("Cliente excluido");
+	}
+
+	@CrossOrigin // desabilita o cors do spring security
+	@PutMapping("/{id}")
+	public ResponseEntity<Object> atualiza(@PathVariable long id, @RequestBody @Valid ClienteDTO clienteDTO,
+			BindingResult result) {
+		logger.info(">>>>>> api atualiza informações de cliente chamado");
+		if (result.hasErrors()) {
 			logger.info(">>>>>> apicontroller atualiza informações de cliente chamado dados invalidos");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados inválidos.");
 		}
-    	Optional<Cliente> c = mantemCliente.consultaPorId(id);
-    	if (c.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
-    	}
-    	Optional<Endereco> e = Optional.ofNullable(mantemCliente.obtemEndereco(clienteDTO.getCep()));
-    	if (e.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CEP não localizado.");
-    	}
-    	Optional<Cliente> cliente = mantemCliente.atualiza(id, clienteDTO.retornaUmCliente());
-    	return ResponseEntity.status(HttpStatus.OK).body(cliente.get());
-    }
-    @CrossOrigin // desabilita o cors do spring security
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> consultaPorId(@PathVariable Long id){
+		Optional<Cliente> c = mantemCliente.consultaPorId(id);
+		if (c.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
+		}
+		Optional<Endereco> e = Optional.ofNullable(mantemCliente.obtemEndereco(clienteDTO.getCep()));
+		if (e.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CEP não localizado.");
+		}
+		Optional<Cliente> cliente = mantemCliente.atualiza(id, clienteDTO.retornaUmCliente());
+		return ResponseEntity.status(HttpStatus.OK).body(cliente.get());
+	}
+
+	@CrossOrigin // desabilita o cors do spring security
+	@GetMapping("/{id}")
+	public ResponseEntity<Object> consultaPorId(@PathVariable Long id) {
 		logger.info(">>>>>> apicontroller consulta por id chamado");
-    	Optional<Cliente> cliente = mantemCliente.consultaPorId(id);
-    	if (cliente.isEmpty()) {
-    		return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
-    	}
-    	return ResponseEntity.status(HttpStatus.OK).body(cliente.get());
-    }
+		Optional<Cliente> cliente = mantemCliente.consultaPorId(id);
+		if (cliente.isEmpty()) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id não encontrado.");
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(cliente.get());
+	}
 }
