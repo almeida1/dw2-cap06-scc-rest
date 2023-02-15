@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.fatec.sccrest"},{"l":"com.fatec.sccrest.controller"},{"l":"com.fatec.sccrest.model"},{"l":"com.fatec.sccrest.services"},{"l":"com.fatec.sccrest.ti.api"},{"l":"com.fatec.sccrest.ti.persistencia"}];updateSearchResults();

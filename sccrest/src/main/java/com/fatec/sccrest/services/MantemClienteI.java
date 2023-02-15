@@ -16,18 +16,31 @@ import org.springframework.web.client.RestTemplate;
 import com.fatec.sccrest.model.Cliente;
 import com.fatec.sccrest.model.ClienteRepository;
 import com.fatec.sccrest.model.Endereco;
-
+/**
+ * A classe mantem cliente implementa o padrao Service. Serivce eh um padrao que basicamente encapsula 
+ * o processo de obtencao de serviços(objetos). O Service cria uma camada de abstracao neste 
+ * processo. Ao inves da classe dependente instanciar suas dependencias diretamente, eles são 
+ * solicitados a partir de um objeto centralizado que atua como localizador de serviços.
+ * @author 
+ *
+ */
 @Service
 public class MantemClienteI implements MantemCliente {
 	Logger logger = LogManager.getLogger(this.getClass());
 	@Autowired
 	ClienteRepository repository;
-
+	
+	/**
+	 * consulta todos os clientes diponiveis na base de dados
+	 * retorna um array de objetos do tipo cliente.
+	 */
 	public List<Cliente> consultaTodos() {
 		logger.info(">>>>>> servico consultaTodos chamado");
 		return repository.findAll();
 	}
-
+	/**
+	 * 
+	 */
 	@Override
 	public Optional<Cliente> consultaPorCpf(String cpf) {
 		logger.info(">>>>>> servico consultaPorCpf chamado");
@@ -47,8 +60,13 @@ public class MantemClienteI implements MantemCliente {
 		cliente.setEndereco(endereco.getLogradouro());
 		return Optional.ofNullable(repository.save(cliente));
 	}
-
+	/**
+	 * 
+	 */
 	@Override
+	/**
+	 * 
+	 */
 	public void delete(Long id) {
 		logger.info(">>>>>> servico delete por id chamado");
 		repository.deleteById(id);

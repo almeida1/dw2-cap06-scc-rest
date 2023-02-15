@@ -1,0 +1,6 @@
+com.fatec.sccrest
+com.fatec.sccrest.controller
+com.fatec.sccrest.model
+com.fatec.sccrest.services
+com.fatec.sccrest.ti.api
+com.fatec.sccrest.ti.persistencia
